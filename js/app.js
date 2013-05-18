@@ -78,6 +78,10 @@ App.User.find = function(id) {
   }
 }
 
+App.User.createRecord = function(properties) {
+  return App.User.store.createRecord(properties);
+}
+
 App.Objective = App.Model.extend({
   fields: ['id', 'name', 'createdAt', 'description', 'coordinates', 'address'],
 
@@ -107,6 +111,9 @@ App.Objective.find = function(id) {
   }
 }
 
+App.Objective.createRecord = function(properties) {
+  return App.Objective.store.createRecord(properties);
+}
 
 // Stores
 
@@ -128,6 +135,12 @@ App.Store = Ember.Object.extend({
 
   commit: function(id) {
     this.get('bucket').update(id);
+  },
+
+  createRecord: function(properties) {
+    var id = properties.id;
+    this._hydrateObject(id, properties);
+    return this.find(id);
   },
 
   _createBucket: function() {
