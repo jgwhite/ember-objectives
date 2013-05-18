@@ -24,9 +24,14 @@
   <script type="text/x-handlebars" data-template-name="objectives">
     <ul>
       {{#each controller}}
-        <li>{{name}}</li>
+        <li>{{#linkTo objective this}}{{name}}{{/linkTo}}</li>
       {{/each}}
     </ul>
+  </script>
+  
+  <script type="text/x-handlebars" data-template-name="objective">
+  	{{name}}<br />
+  	{{createdAt}}
   </script>
 
   <script src="js/libs/jquery-1.9.1.js"></script>

@@ -25,7 +25,8 @@ App.initializer({
 // Routes
 
 App.Router.map(function() {
-  this.resource('objectives');
+	this.resource('objectives');
+	this.resource('objective', { path: 'objectives/:objective_id' } );
 });
 
 App.IndexRoute = Ember.Route.extend({
@@ -47,7 +48,7 @@ App.User = Ember.Object.extend();
 
 App.Objective = Ember.Object.extend({
   forWire: function() {
-    return this.getProperties('id', 'name');
+    return this.getProperties('id', 'name', 'createdAt');
   }
 });
 
@@ -107,6 +108,7 @@ App.ObjectiveStore = Ember.Object.extend({
 
     object.setProperties({
       name: properties.name,
+      createdAt: Date.parse( properties.createdAt ),
       isLoaded: true
     });
 
