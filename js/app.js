@@ -26,10 +26,10 @@ App.initializer({
 // Routes
 
 App.Router.map(function() {
-	this.resource('objectives', function() {
-	  this.route('new');
-	});
-	this.resource('objective', { path: 'objectives/:objective_id' } );
+  this.resource('objectives', function() {
+    this.route('new');
+  });
+  this.resource('objective', { path: 'objectives/:objective_id' } );
   this.resource('users');
 });
 
@@ -46,9 +46,9 @@ App.ObjectivesRoute = Ember.Route.extend({
 });
 
 App.ObjectivesNewRoute = Ember.Route.extend({
-	model: function() {
-		return App.Objective.createRecord({});
-	}
+  model: function() {
+    return App.Objective.createRecord({});
+  }
 });
 
 App.UsersRoute = Ember.Route.extend({
@@ -224,41 +224,41 @@ App.ObjectiveStore = App.Store.extend({
 // Controllers
 
 App.ObjectivesNewController = Ember.ObjectController.extend({
-	save: function() {
-		this.get('model').commit();
+  save: function() {
+    this.get('model').commit();
     this.transitionToRoute('objective', this.get('model'));
-	}
+  }
 });
 
 
 // Views & Helpers
 
 App.MapView = Ember.View.extend({
-	didInsertElement: function() {
-		var coordinates = this.get( 'coordinates' );
+  didInsertElement: function() {
+    var coordinates = this.get( 'coordinates' );
     var location = this.get( 'location' );
-		var latlng = new google.maps.LatLng( coordinates[0], coordinates[1] );
-		var mapOptions = {
-			zoom: 15,
-			center: latlng,
-			mapTypeId: google.maps.MapTypeId.ROADMAP
-		}
-		var element = this.get('element');
-		var container = $('<div>', { class: 'map-canvas' });
-		container.appendTo(element);
-		var map = new google.maps.Map( container[0], mapOptions );
+    var latlng = new google.maps.LatLng( coordinates[0], coordinates[1] );
+    var mapOptions = {
+      zoom: 15,
+      center: latlng,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    }
+    var element = this.get('element');
+    var container = $('<div>', { class: 'map-canvas' });
+    container.appendTo(element);
+    var map = new google.maps.Map( container[0], mapOptions );
     var marker = new google.maps.Marker({
         map: map,
         position: latlng
     });
     map.setCenter(latlng);
-	}
+  }
 });
 
 Ember.Handlebars.registerBoundHelper('humanDate', function(date) {
-	if (!Ember.isNone(date)) return moment(date).fromNow();
+  if (!Ember.isNone(date)) return moment(date).fromNow();
 });
 
 Ember.Handlebars.registerBoundHelper('latLng', function(coordinates) {
-	if (!Ember.isNone(coordinates)) return coordinates.join(',');
+  if (!Ember.isNone(coordinates)) return coordinates.join(',');
 });

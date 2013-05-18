@@ -40,7 +40,7 @@
           {{#each controller}}
             <li>{{#linkTo objective this}}{{name}}{{/linkTo}}</li>
           {{else}}
-          	No objectives!  Wait for your orders...
+            No objectives!  Wait for your orders...
           {{/each}}
         </ol>
       </div>
@@ -51,31 +51,31 @@
   </script>
 
   <script type="text/x-handlebars" data-template-name="objective">
-	  <div class="row">
-  		<div class="large-5 columns">
+    <div class="row">
+      <div class="large-5 columns">
         <div class="tagline">Your objective:</div>
-  			<h2>{{name}}</h2>
-  			<div class="timeago">{{humanDate createdAt}}</div>
-  			<div class="description">
+        <h2>{{name}}</h2>
+        <div class="timeago">{{humanDate createdAt}}</div>
+        <div class="description">
           {{description}}
         </div>
         <p><button class="small">Mark completed</button></p>
-  		</div>
-      <div class="large-7 columns">
-  			{{#if coordinates}}
-  				{{view App.MapView coordinatesBinding=coordinates}}
-  			{{/if}}
       </div>
-	  </div>
+      <div class="large-7 columns">
+        {{#if coordinates}}
+          {{view App.MapView coordinatesBinding=coordinates}}
+        {{/if}}
+      </div>
+    </div>
   </script>
-  
+
   <script type="text/x-handlebars" data-template-name="objectives/new">
     <h2>Add a new objective</h2>
     <form>
-    	<p>{{view Ember.TextField valueBinding="name" placeholder="Objective Name"}}</p>
-    	<p>{{view Ember.TextField valueBinding="address" placeholder="Street Address"}}</p>
-    	<p>{{view Ember.TextArea valueBinding="description" placeholder="Description"}}</p>
-      	<p><button {{action save}} type="submit">Create objective</button></p>
+      <p>{{view Ember.TextField valueBinding="name" placeholder="Objective Name"}}</p>
+      <p>{{view Ember.TextField valueBinding="address" placeholder="Street Address"}}</p>
+      <p>{{view Ember.TextArea valueBinding="description" placeholder="Description"}}</p>
+        <p><button {{action save}} type="submit">Create objective</button></p>
     </form>
   </script>
 
