@@ -131,15 +131,17 @@ App.ObjectiveStore = Ember.Object.extend({
 
 App.MapView = Ember.View.extend({
 	didInsertElement: function() {
-		var coordinates = this.get( 'context.coordinates' );
-		var latlong = new google.maps.LatLng( coordinates[0], coordinates[1] );
+		var coordinates = this.get( 'coordinates' );
+		var latlng = new google.maps.LatLng( coordinates[0], coordinates[1] );
 		var mapOptions = {
 			zoom: 15,
 			center: latlng,
 			mapTypeId: google.maps.MapTypeId.ROADMAP
 		}
 		var element = this.get('element');
-		google.maps.Map( element, mapOptions );
+		var container = $('<div>', { style: 'width: 200px; height: 200px' });
+		container.appendTo(element);
+		new google.maps.Map( container[0], mapOptions );
 	}
 });
 

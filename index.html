@@ -36,7 +36,9 @@
 			{{humanDate createdAt}}<br />
 			{{description}}<br />
 			{{latLng coordinates}}<br />
-			{{view App.MapView}}
+			{{#if coordinates}}
+				{{view App.MapView coordinatesBinding=coordinates}}
+			{{/if}}
 		</div>
 	  </div>
   </script>
@@ -45,7 +47,7 @@
   <script src="js/libs/handlebars-1.0.0-rc.3.js"></script>
   <script src="js/libs/ember-1.0.0-rc.3.js"></script>
   <script src="https://js.simperium.com/v0.1/"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>">
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
   <script src="js/libs/moment.js"></script>
   <script src="js/app.js"></script>
 
