@@ -46,7 +46,9 @@ App.ObjectivesRoute = Ember.Route.extend({
 });
 
 App.ObjectivesNewRoute = Ember.Route.extend({
-	
+	model: function() {
+		return App.Objective.createRecord({});
+	}
 });
 
 App.UsersRoute = Ember.Route.extend({
@@ -142,7 +144,8 @@ App.Store = Ember.Object.extend({
   },
 
   createRecord: function(properties) {
-    var id = properties.id;
+    var id = +moment();
+    properties.id = id;
     this._hydrateObject(id, properties);
     return this.find(id);
   },
@@ -212,8 +215,8 @@ App.ObjectiveStore = App.Store.extend({
 // Controllers
 
 App.ObjectivesNewController = Ember.ObjectController.extend({
-	create : function() {
-	
+	save : function() {
+		this.get('model').commit();
 	}
 });
 
