@@ -42,3 +42,7 @@ ol {
   -webkit-box-shadow: 2px 2px #ccc;
   box-shadow: 2px 2px #ccc;
 }
+
+.map-canvas img {
+  max-width: none;
+}
