@@ -18,6 +18,7 @@ App.initializer({
   name: 'stores',
   initialize: function() {
     App.Objective.store = App.ObjectiveStore.create();
+    App.User.store = App.UserStore.create();
   }
 });
 
@@ -27,6 +28,7 @@ App.initializer({
 App.Router.map(function() {
 	this.resource('objectives');
 	this.resource('objective', { path: 'objectives/:objective_id' } );
+  this.resource('users');
 });
 
 App.IndexRoute = Ember.Route.extend({
@@ -41,13 +43,16 @@ App.ObjectivesRoute = Ember.Route.extend({
   }
 });
 
+App.UsersRoute = Ember.Route.extend({
+  model: function() {
+    return App.User.find();
+  }
+});
 
 // Models
 
-App.User = Ember.Object.extend();
-
-App.Objective = Ember.Object.extend({
-  fields: ['id', 'name', 'createdAt', 'description', 'coordinates'],
+App.Model = Ember.Object.extend({
+  fields: [],
 
   forWire: function() {
     return this.getProperties(this.get('fields'));
@@ -56,6 +61,22 @@ App.Objective = Ember.Object.extend({
   commit: function() {
     this.get('store').commit(this.get('id'));
   }
+});
+
+App.User = App.Model.extend({
+  fields: ['id', 'name']
+});
+
+App.User.find = function(id) {
+  if (Ember.isNone(id)) {
+    return App.User.store.all();
+  } else {
+    return App.User.store.find(id);
+  }
+}
+
+App.Objective = App.Model.extend({
+  fields: ['id', 'name', 'createdAt', 'description', 'coordinates']
 });
 
 App.Objective.find = function(id) {
@@ -67,7 +88,7 @@ App.Objective.find = function(id) {
 }
 
 
-App.ObjectiveStore = Ember.Object.extend({
+App.Store = Ember.Object.extend({
   init: function() {
     this._super();
     this.set('idMap', {});
@@ -87,9 +108,8 @@ App.ObjectiveStore = Ember.Object.extend({
     this.get('bucket').update(id);
   },
 
-
   _createBucket: function() {
-    var bucket = App.simperium.bucket('objectives'),
+    var bucket = App.simperium.bucket(this.get('name')),
         self = this;
 
     bucket.on('notify', function(id, properties) {
@@ -110,23 +130,42 @@ App.ObjectiveStore = Ember.Object.extend({
     var idMap = this.get('idMap');
 
     return idMap[id] = idMap[id] ||
-                       App.Objective.create({ id: id, store: this });
+                       this.get('model').create({ id: id, store: this });
   },
 
   _hydrateObject: function(id, properties) {
     var object = this._objectFor(id);
+    object.setProperties(this.deserialize(properties));
+    this.get('hydratedObjects').addObject(object);
+  },
 
-    object.setProperties({
+  deserialize: function(object, properties) {
+    return {};
+  }
+});
+
+App.UserStore = App.Store.extend({
+  name: 'users',
+  model: App.User,
+  deserialize: function(properties) {
+    return {
+      id: properties.id,
+      name: properties.name
+    }
+  }
+});
+
+App.ObjectiveStore = App.Store.extend({
+  name: 'objectives',
+  model: App.Objective,
+  deserialize: function(properties) {
+    return {
       name: properties.name,
       createdAt: Date.parse(properties.createdAt),
       description: properties.description,
       coordinates: properties.coordinates,
-      isLoaded: true
-    });
-
-    this.get('hydratedObjects').addObject(object);
+    }
   }
-
 });
 
 App.MapView = Ember.View.extend({
