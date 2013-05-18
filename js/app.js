@@ -1,32 +1,23 @@
 App = Ember.Application.create();
 
-// Initializers
+App.SIMPERIUM_APP_ID = 'patch-mechanisms-2e0';
+App.SIMPERIUM_TOKEN = '524b96b47f26477897aa2737b28ec47e';
 
-App.initializer({
-  name: 'stores',
-  initialize: function() {
-    App.Objective.store = App.Store.create();
-  }
-});
+// Initializers
 
 App.initializer({
   name: 'simperium',
   initialize: function() {
-    App.simperium = new Simperium('patch-mechanisms-2e0', {
-      token : '524b96b47f26477897aa2737b28ec47e'
+    App.simperium = new Simperium(App.SIMPERIUM_APP_ID, {
+      token : App.SIMPERIUM_TOKEN
     });
+  }
+});
 
-    App.objectivesBucket = App.simperium.bucket('objectives');
-
-    App.objectivesBucket.on('notify', function(id, data) {
-      var objective = App.Objective.create({
-        id: id,
-        name: data.name
-      });
-      App.Objective.store.addObject(id, objective);
-    });
-
-    App.objectivesBucket.start();
+App.initializer({
+  name: 'stores',
+  initialize: function() {
+    App.Objective.store = App.ObjectiveStore.create();
   }
 });
 
@@ -54,7 +45,12 @@ App.ObjectivesRoute = Ember.Route.extend({
 
 App.User = Ember.Object.extend();
 
-App.Objective = Ember.Object.extend();
+App.Objective = Ember.Object.extend({
+  forWire: function() {
+    return this.getProperties('id', 'name');
+  }
+});
+
 App.Objective.find = function(id) {
   if (Ember.isNone(id)) {
     return App.Objective.store.all();
@@ -63,23 +59,58 @@ App.Objective.find = function(id) {
   }
 }
 
-App.Store = Ember.Object.extend({
+App.ObjectiveStore = Ember.Object.extend({
+  idMap: {},
+  hydratedObjects: [],
+
   init: function() {
     this._super();
-    this.set('idMap', Ember.Object.create());
-    this.set('list', []);
+    this._createBucket();
   },
 
   all: function() {
-    return this.get('list');
+    return this.get('hydratedObjects');
   },
 
   find: function(id) {
-    return this.get('idMap').get(id);
+    return this._objectFor(id);
   },
 
-  addObject: function(id, object) {
-    this.get('idMap').set(id, object);
-    this.get('list').addObject(object);
+
+  _createBucket: function() {
+    var bucket = App.simperium.bucket('objectives'),
+        self = this;
+
+    bucket.on('notify', function(id, properties) {
+      self._hydrateObject(id, properties);
+    });
+
+    bucket.on('local', function(id) {
+      var object = self.find(id);
+      return object.forWire();
+    });
+
+    bucket.start();
+
+    this.set('bucket', bucket);
+  },
+
+  _objectFor: function(id) {
+    var idMap = this.get('idMap');
+
+    return idMap[id] = idMap[id] ||
+                       App.Objective.create({ id: id });
+  },
+
+  _hydrateObject: function(id, properties) {
+    var object = this._objectFor(id);
+
+    object.setProperties({
+      name: properties.name,
+      isLoaded: true
+    });
+
+    this.get('hydratedObjects').addObject(object);
   }
+
 });
