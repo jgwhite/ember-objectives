@@ -72,7 +72,7 @@
     <form>
     	<p>{{view Ember.TextField valueBinding="name" placeholder="Objective Name"}}</p>
     	<p>{{view Ember.TextField valueBinding="address" placeholder="Street Address"}}</p>
-    	<p>{{view Ember.TextField valueBinding="description" placeholder="Description"}}</p>
+    	<p>{{view Ember.TextArea valueBinding="description" placeholder="Description"}}</p>
       	<p><button {{action save}} type="submit">Create objective</button></p>
     </form>
   </script>
