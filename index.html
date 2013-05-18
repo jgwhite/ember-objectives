@@ -39,6 +39,8 @@
         <ol>
           {{#each controller}}
             <li>{{#linkTo objective this}}{{name}}{{/linkTo}}</li>
+          {{else}}
+          	No objectives!  Wait for your orders...
           {{/each}}
         </ol>
       </div>
