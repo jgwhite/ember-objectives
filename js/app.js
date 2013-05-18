@@ -51,6 +51,7 @@ App.UsersRoute = Ember.Route.extend({
   }
 });
 
+
 // Models
 
 App.Model = Ember.Object.extend({
@@ -78,7 +79,24 @@ App.User.find = function(id) {
 }
 
 App.Objective = App.Model.extend({
-  fields: ['id', 'name', 'createdAt', 'description', 'coordinates']
+  fields: ['id', 'name', 'createdAt', 'description', 'coordinates', 'address'],
+
+  addressDidChange: function() {
+    var address = this.get('address');
+    if (Ember.isEmpty(address)) return;
+
+    var geocoder = new google.maps.Geocoder(),
+        self = this;
+
+    geocoder.geocode(this.getProperties('address'), function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        var location = results[0].geometry.location;
+        self.set('coordinates', [location.lat(), location.lng()]);
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+      }
+    });
+  }.observes('address')
 });
 
 App.Objective.find = function(id) {
@@ -89,6 +107,8 @@ App.Objective.find = function(id) {
   }
 }
 
+
+// Stores
 
 App.Store = Ember.Object.extend({
   init: function() {
@@ -167,9 +187,13 @@ App.ObjectiveStore = App.Store.extend({
       description: properties.description,
       address: properties.address,
       coordinates: properties.coordinates,
+      address: properties.address
     }
   }
 });
+
+
+// Views & Helpers
 
 App.MapView = Ember.View.extend({
 	didInsertElement: function() {
