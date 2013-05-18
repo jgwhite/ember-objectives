@@ -92,8 +92,8 @@ App.Objective = App.Model.extend({
   fields: ['id', 'name', 'createdAt', 'description', 'coordinates', 'address'],
 
   addressDidChange: function() {
-    var address = this.get('address');
-    if (Ember.isEmpty(address)) return;
+    if (Ember.isEmpty(this.get('address'))) return;
+    if (!Ember.isEmpty(this.get('coordinates'))) return;
 
     var geocoder = new google.maps.Geocoder(),
         self = this;
@@ -144,7 +144,7 @@ App.Store = Ember.Object.extend({
   },
 
   createRecord: function(properties) {
-    var id = +moment();
+    var id = moment().valueOf().toString();
     properties.id = id;
     this._hydrateObject(id, properties);
     return this.find(id);
@@ -215,8 +215,9 @@ App.ObjectiveStore = App.Store.extend({
 // Controllers
 
 App.ObjectivesNewController = Ember.ObjectController.extend({
-	save : function() {
+	save: function() {
 		this.get('model').commit();
+    this.transitionTo('objective', this.get('model'));
 	}
 });
 
