@@ -22,11 +22,19 @@
   </script>
 
   <script type="text/x-handlebars" data-template-name="objectives">
-    <ul>
-      {{#each controller}}
-        <li>{{#linkTo objective this}}{{name}}{{/linkTo}}</li>
-      {{/each}}
-    </ul>
+    <div class="row">
+      <div class="large-6 columns">
+        <h2>Current objectives</h2>
+        <ol>
+          {{#each controller}}
+            <li>{{#linkTo objective this}}{{name}}{{/linkTo}}</li>
+          {{/each}}
+        </ol>
+      </div>
+      <div class="large-6 columns">
+        {{outlet}}
+      </div>
+    </div>
   </script>
 
   <script type="text/x-handlebars" data-template-name="objective">
@@ -41,6 +49,16 @@
 			{{/if}}
 		</div>
 	  </div>
+  </script>
+  
+  <script type="text/x-handlebars" data-template-name="objectives/new">
+    <h2>Add an objective</h2>
+    <form>
+      <p><input type="text" name="name" {{bindAttr value="name"}} placeholder="Objective"></p>
+      <p><input type="text" name="address" {{bindAttr value="address"}} placeholder="Street address"></p>
+      <p><textarea name="description" {{bindAttr value="description"}} placeholder="Tasks"></textarea></p>
+      <p><button type="submit">Create objective</button></p>
+    </form>
   </script>
 
   <script src="js/libs/jquery-1.9.1.js"></script>
