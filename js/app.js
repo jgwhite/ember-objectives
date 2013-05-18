@@ -47,8 +47,14 @@ App.ObjectivesRoute = Ember.Route.extend({
 App.User = Ember.Object.extend();
 
 App.Objective = Ember.Object.extend({
+  fields: ['id', 'name', 'createdAt', 'description', 'coordinates'],
+
   forWire: function() {
-    return this.getProperties('id', 'name', 'createdAt', 'description', 'coordinates');
+    return this.getProperties(this.get('fields'));
+  },
+
+  commit: function() {
+    this.get('store').commit(this.get('id'));
   }
 });
 
@@ -60,12 +66,12 @@ App.Objective.find = function(id) {
   }
 }
 
-App.ObjectiveStore = Ember.Object.extend({
-  idMap: {},
-  hydratedObjects: [],
 
+App.ObjectiveStore = Ember.Object.extend({
   init: function() {
     this._super();
+    this.set('idMap', {});
+    this.set('hydratedObjects', []);
     this._createBucket();
   },
 
@@ -75,6 +81,10 @@ App.ObjectiveStore = Ember.Object.extend({
 
   find: function(id) {
     return this._objectFor(id);
+  },
+
+  commit: function(id) {
+    this.get('bucket').update(id);
   },
 
 
@@ -100,7 +110,7 @@ App.ObjectiveStore = Ember.Object.extend({
     var idMap = this.get('idMap');
 
     return idMap[id] = idMap[id] ||
-                       App.Objective.create({ id: id });
+                       App.Objective.create({ id: id, store: this });
   },
 
   _hydrateObject: function(id, properties) {
@@ -108,7 +118,7 @@ App.ObjectiveStore = Ember.Object.extend({
 
     object.setProperties({
       name: properties.name,
-      createdAt: Date.parse( properties.createdAt ),
+      createdAt: Date.parse(properties.createdAt),
       description: properties.description,
       coordinates: properties.coordinates,
       isLoaded: true
@@ -119,9 +129,12 @@ App.ObjectiveStore = Ember.Object.extend({
 
 });
 
+// Helpers
+
 Ember.Handlebars.registerBoundHelper('humanDate', function(date) {
 	if (!Ember.isNone(date)) return moment(date).fromNow();
 });
+
 Ember.Handlebars.registerBoundHelper('latLng', function(coordinates) {
 	if (!Ember.isNone(coordinates)) return coordinates.join(',');
 });
