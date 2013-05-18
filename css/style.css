@@ -1,3 +1,44 @@
 /* Put your CSS here */
 html, body {
+  background-color: #f8f8f8;
+}
+
+h1 {
+  letter-spacing: 1px;
+}
+
+h2 {
+  font-size: 30px;
+  font-weight: normal;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+  color: #5da423;
+}
+
+textarea {
+  height: 6em;
+}
+
+ol {
+  margin-left: 25px;
+}
+
+.timeago {
+  font-size: 0.8em;
+  margin-bottom: 2em;
+  color: gray;
+}
+
+.description {
+  margin: 1em 0 2em;
+}
+
+.map-canvas {
+  width: 100%;
+  height: 400px;
+  border: 1px solid gray;
+  -moz-box-shadow: 2px 2px #ccc;
+  -webkit-box-shadow: 2px 2px #ccc;
+  box-shadow: 2px 2px #ccc;
 }

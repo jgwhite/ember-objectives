@@ -181,7 +181,7 @@ App.MapView = Ember.View.extend({
 			mapTypeId: google.maps.MapTypeId.ROADMAP
 		}
 		var element = this.get('element');
-		var container = $('<div>', { style: 'width: 200px; height: 200px' });
+		var container = $('<div>', { class: 'map-canvas' });
 		container.appendTo(element);
 		new google.maps.Map( container[0], mapOptions );
 	}
