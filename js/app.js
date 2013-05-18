@@ -119,6 +119,20 @@ App.ObjectiveStore = Ember.Object.extend({
 
 });
 
+App.MapView = Ember.View.extend({
+	didInsertElement: function() {
+		var coordinates = this.get( 'context.coordinates' );
+		var latlong = new google.maps.LatLng( coordinates[0], coordinates[1] );
+		var mapOptions = {
+			zoom: 15,
+			center: latlng,
+			mapTypeId: google.maps.MapTypeId.ROADMAP
+		}
+		var element = this.get('element');
+		google.maps.Map( element, mapOptions );
+	}
+});
+
 Ember.Handlebars.registerBoundHelper('humanDate', function(date) {
 	if (!Ember.isNone(date)) return moment(date).fromNow();
 });
