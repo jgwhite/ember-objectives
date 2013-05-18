@@ -45,11 +45,18 @@ App.ObjectivesRoute = Ember.Route.extend({
   }
 });
 
+App.ObjectivesNewRoute = Ember.Route.extend({
+	model: function() {
+		return App.Objective.createRecord({});
+	}
+});
+
 App.UsersRoute = Ember.Route.extend({
   model: function() {
     return App.User.find();
   }
 });
+
 
 // Models
 
@@ -77,8 +84,29 @@ App.User.find = function(id) {
   }
 }
 
+App.User.createRecord = function(properties) {
+  return App.User.store.createRecord(properties);
+}
+
 App.Objective = App.Model.extend({
-  fields: ['id', 'name', 'createdAt', 'description', 'coordinates']
+  fields: ['id', 'name', 'createdAt', 'description', 'coordinates', 'address'],
+
+  addressDidChange: function() {
+    var address = this.get('address');
+    if (Ember.isEmpty(address)) return;
+
+    var geocoder = new google.maps.Geocoder(),
+        self = this;
+
+    geocoder.geocode(this.getProperties('address'), function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        var location = results[0].geometry.location;
+        self.set('coordinates', [location.lat(), location.lng()]);
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+      }
+    });
+  }.observes('address')
 });
 
 App.Objective.find = function(id) {
@@ -89,6 +117,11 @@ App.Objective.find = function(id) {
   }
 }
 
+App.Objective.createRecord = function(properties) {
+  return App.Objective.store.createRecord(properties);
+}
+
+// Stores
 
 App.Store = Ember.Object.extend({
   init: function() {
@@ -108,6 +141,13 @@ App.Store = Ember.Object.extend({
 
   commit: function(id) {
     this.get('bucket').update(id);
+  },
+
+  createRecord: function(properties) {
+    var id = +moment();
+    properties.id = id;
+    this._hydrateObject(id, properties);
+    return this.find(id);
   },
 
   _createBucket: function() {
@@ -167,9 +207,21 @@ App.ObjectiveStore = App.Store.extend({
       description: properties.description,
       address: properties.address,
       coordinates: properties.coordinates,
+      address: properties.address
     }
   }
 });
+
+// Controllers
+
+App.ObjectivesNewController = Ember.ObjectController.extend({
+	save : function() {
+		this.get('model').commit();
+	}
+});
+
+
+// Views & Helpers
 
 App.MapView = Ember.View.extend({
 	didInsertElement: function() {
