@@ -249,9 +249,9 @@ App.MapView = Ember.View.extend({
 		var map = new google.maps.Map( container[0], mapOptions );
     var marker = new google.maps.Marker({
         map: map,
-        position: location
+        position: latlng
     });
-    map.setCenter(location);
+    map.setCenter(latlng);
 	}
 });
 
