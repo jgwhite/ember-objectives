@@ -48,7 +48,7 @@ App.User = Ember.Object.extend();
 
 App.Objective = Ember.Object.extend({
   forWire: function() {
-    return this.getProperties('id', 'name', 'createdAt', 'description');
+    return this.getProperties('id', 'name', 'createdAt', 'description', 'coordinates');
   }
 });
 
@@ -110,6 +110,7 @@ App.ObjectiveStore = Ember.Object.extend({
       name: properties.name,
       createdAt: Date.parse( properties.createdAt ),
       description: properties.description,
+      coordinates: properties.coordinates,
       isLoaded: true
     });
 
@@ -120,4 +121,7 @@ App.ObjectiveStore = Ember.Object.extend({
 
 Ember.Handlebars.registerBoundHelper('humanDate', function(date) {
 	if (!Ember.isNone(date)) return moment(date).fromNow();
+});
+Ember.Handlebars.registerBoundHelper('latLng', function(coordinates) {
+	if (!Ember.isNone(coordinates)) return coordinates.join(',');
 });
