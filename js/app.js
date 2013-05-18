@@ -89,10 +89,11 @@ App.User.createRecord = function(properties) {
 }
 
 App.Objective = App.Model.extend({
-  fields: ['id', 'name', 'createdAt', 'description', 'coordinates', 'address'],
+  fields: ['id', 'name', 'createdAt', 'description', 'location', 'coordinates', 'address'],
 
   addressDidChange: function() {
     if (Ember.isEmpty(this.get('address'))) return;
+    if (!Ember.isEmpty(this.get('location'))) return;
     if (!Ember.isEmpty(this.get('coordinates'))) return;
 
     var geocoder = new google.maps.Geocoder(),
@@ -101,7 +102,9 @@ App.Objective = App.Model.extend({
     geocoder.geocode(this.getProperties('address'), function(results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
         var location = results[0].geometry.location;
+        self.set('location', location);
         self.set('coordinates', [location.lat(), location.lng()]);
+        self.set('address', results[0].formatted_address);
       } else {
         alert('Geocode was not successful for the following reason: ' + status);
       }
@@ -206,6 +209,7 @@ App.ObjectiveStore = App.Store.extend({
       createdAt: Date.parse(properties.createdAt),
       description: properties.description,
       address: properties.address,
+      location: properties.location,
       coordinates: properties.coordinates,
       address: properties.address
     }
@@ -227,6 +231,7 @@ App.ObjectivesNewController = Ember.ObjectController.extend({
 App.MapView = Ember.View.extend({
 	didInsertElement: function() {
 		var coordinates = this.get( 'coordinates' );
+    var location = this.get( 'location' );
 		var latlng = new google.maps.LatLng( coordinates[0], coordinates[1] );
 		var mapOptions = {
 			zoom: 15,
@@ -236,7 +241,12 @@ App.MapView = Ember.View.extend({
 		var element = this.get('element');
 		var container = $('<div>', { class: 'map-canvas' });
 		container.appendTo(element);
-		new google.maps.Map( container[0], mapOptions );
+		var map = new google.maps.Map( container[0], mapOptions );
+    var marker = new google.maps.Marker({
+        map: map,
+        position: location
+    });
+    map.setCenter(location);
 	}
 });
 
