@@ -48,7 +48,7 @@ App.User = Ember.Object.extend();
 
 App.Objective = Ember.Object.extend({
   forWire: function() {
-    return this.getProperties('id', 'name', 'createdAt');
+    return this.getProperties('id', 'name', 'createdAt', 'description');
   }
 });
 
@@ -109,10 +109,15 @@ App.ObjectiveStore = Ember.Object.extend({
     object.setProperties({
       name: properties.name,
       createdAt: Date.parse( properties.createdAt ),
+      description: properties.description,
       isLoaded: true
     });
 
     this.get('hydratedObjects').addObject(object);
   }
 
+});
+
+Ember.Handlebars.registerBoundHelper('humanDate', function(date) {
+	if (!Ember.isNone(date)) return moment(date).fromNow();
 });
