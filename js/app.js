@@ -45,6 +45,10 @@ App.ObjectivesRoute = Ember.Route.extend({
   }
 });
 
+App.ObjectivesNewRoute = Ember.Route.extend({
+	
+});
+
 App.UsersRoute = Ember.Route.extend({
   model: function() {
     return App.User.find();
@@ -203,6 +207,14 @@ App.ObjectiveStore = App.Store.extend({
       address: properties.address
     }
   }
+});
+
+// Controllers
+
+App.ObjectivesNewController = Ember.ObjectController.extend({
+	create : function() {
+	
+	}
 });
 
 

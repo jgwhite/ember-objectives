@@ -57,7 +57,7 @@
       <p><input type="text" name="name" {{bindAttr value="name"}} placeholder="Objective"></p>
       <p><input type="text" name="address" {{bindAttr value="address"}} placeholder="Street address"></p>
       <p><textarea name="description" {{bindAttr value="description"}} placeholder="Tasks"></textarea></p>
-      <p><button type="submit">Create objective</button></p>
+      <p><button {{action create}} type="submit">Create objective</button></p>
     </form>
   </script>
 
