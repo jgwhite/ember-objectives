@@ -91,7 +91,7 @@ App.User.createRecord = function(properties) {
 App.Objective = App.Model.extend({
   fields: ['id', 'name', 'createdAt', 'description', 'location', 'coordinates', 'address'],
 
-  addressDidChange: function() {
+  addressDidChange: _.debounce(function() {
     if (Ember.isEmpty(this.get('address'))) return;
     if (!Ember.isEmpty(this.get('location'))) return;
     if (!Ember.isEmpty(this.get('coordinates'))) return;
@@ -109,7 +109,7 @@ App.Objective = App.Model.extend({
         alert('Geocode was not successful for the following reason: ' + status);
       }
     });
-  }.observes('address')
+  }, 500).observes('address')
 });
 
 App.Objective.find = function(id) {
@@ -143,14 +143,19 @@ App.Store = Ember.Object.extend({
   },
 
   commit: function(id) {
+    var object = this.find(id);
+    if (!this.get('hydratedObjects').contains(object)) {
+      this.get('hydratedObjects').addObject(object);
+    }
     this.get('bucket').update(id);
   },
 
   createRecord: function(properties) {
     var id = moment().valueOf().toString();
     properties.id = id;
-    this._hydrateObject(id, properties);
-    return this.find(id);
+    var object = this.find(id);
+    object.setProperties(properties);
+    return object;
   },
 
   _createBucket: function() {
@@ -221,7 +226,7 @@ App.ObjectiveStore = App.Store.extend({
 App.ObjectivesNewController = Ember.ObjectController.extend({
 	save: function() {
 		this.get('model').commit();
-    this.transitionTo('objective', this.get('model'));
+    this.transitionToRoute('objective', this.get('model'));
 	}
 });
 
